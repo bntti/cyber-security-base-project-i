@@ -1,11 +1,9 @@
 <h1>Login</h1>
 
-{{#if login}}
-  {{#unless success}}
-    <p>
-      Invalid username or password.
-    </p>
-  {{/unless}}
+{{#if loginFailed}}
+  <p>
+    Invalid username or password.
+  </p>
 {{/if}}
 
 <form method="post" action="/login">
@@ -20,16 +18,10 @@
 
 <h3>Register</h3>
 
-{{#if register}}
-  {{#if success}}
-    <p>
-      Account registered, please log in.
-    </p>
-  {{else}}
-    <p>
-      Account registration failed.
-    </p>
-  {{/if}}
+{{#if registerFailed}}
+  <p>
+    Account registration failed.
+  </p>
 {{/if}}
 
 <form method="post" action="/register">
