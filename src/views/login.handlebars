@@ -1,0 +1,43 @@
+<h1>Login</h1>
+
+{{#if login}}
+  {{#unless success}}
+    <p>
+      Invalid username or password.
+    </p>
+  {{/unless}}
+{{/if}}
+
+<form method="post" action="/login">
+  <label for="username">Username</label><br />
+  <input type="text" id="username" name="username" /><br />
+
+  <label for="password">Password</label><br />
+  <input type="password" id="password" name="password" /><br />
+
+  <input type="submit" value="Submit" />
+</form>
+
+<h3>Register</h3>
+
+{{#if register}}
+  {{#if success}}
+    <p>
+      Account registered, please log in.
+    </p>
+  {{else}}
+    <p>
+      Account registration failed.
+    </p>
+  {{/if}}
+{{/if}}
+
+<form method="post" action="/register">
+  <label for="username">Username</label><br />
+  <input type="text" id="username" name="username" /><br />
+
+  <label for="password">Password</label><br />
+  <input type="password" id="password" name="password" /><br />
+
+  <input type="submit" value="Submit" />
+</form>
