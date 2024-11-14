@@ -48,11 +48,12 @@ app.get("/login", (req, res) => {
 });
 
 app.get("/users", (req, res) => {
-  if (!req.session.user) return res.redirect("/login");
-  if (!req.session.user.username.startsWith("admin")) return res.redirect("/");
+  if (!req.session.user) return res.status(401).redirect("/login");
+  if (!req.session.user.username.startsWith("admin"))
+    return res.status(403).redirect("/");
 
   // if (!req.session.user.admin)
-  //   return res.redirect("/login");
+  //   return res.status(403).redirect("/login");
 
   res.render("users");
 });
@@ -89,8 +90,12 @@ app.post("/register", async (req, res) => {
 });
 
 app.post("/users", async (req, res) => {
-  if (!req.session.user) return res.redirect("/login");
-  if (!req.session.user.username.startsWith("admin")) return res.redirect("/");
+  if (!req.session.user) return res.status(401).redirect("/login");
+  if (!req.session.user.username.startsWith("admin"))
+    return res.status(403).redirect("/");
+
+  // if (!req.session.user.admin)
+  //   return res.status(403).redirect("/login");
 
   const search = req.body.search;
   const result = await findUser(search);
