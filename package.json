@@ -1,5 +1,5 @@
 {
-  "name": "cyber-security-base-2024-project-i",
+  "name": "cyber-security-base-project-i",
   "version": "1.0.0",
   "scripts": {
     "start": "node src/index.js"
