@@ -80,7 +80,7 @@ export const getUser = async (username) =>
 export const addUser = async (username, password, admin) =>
   new Promise(async (resolve, reject) => {
     db.run(
-      `INSERT INTO users(username, password, admin) VALUES (?, ?, ?)`,
+      "INSERT INTO users(username, password, admin) VALUES (?, ?, ?)",
       [username, await hash(password), false],
       async (err) => {
         if (err) {
@@ -89,6 +89,21 @@ export const addUser = async (username, password, admin) =>
         }
 
         resolve(await getUser(username));
+      }
+    );
+  });
+
+export const findUser = async (search) =>
+  new Promise(async (resolve, reject) => {
+    db.get(
+      `SELECT username FROM users WHERE username = '${search}'`,
+      async (err, row) => {
+        if (err) {
+          console.error(err.message);
+          return reject();
+        }
+
+        return row ? resolve(row.username) : resolve(null);
       }
     );
   });

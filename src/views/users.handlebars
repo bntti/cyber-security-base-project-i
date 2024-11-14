@@ -1,1 +1,21 @@
 <h1>Users</h1>
+
+{{#if result}}
+  <p>
+    User found:
+    {{result}}
+  </p>
+{{/if}}
+
+{{#if noResult}}
+  <p>
+    No user found
+  </p>
+{{/if}}
+
+<form method="post" action="/users">
+  <label for="search">Search</label><br />
+  <input type="text" id="search" name="search" /><br />
+
+  <input type="submit" value="Submit" />
+</form>

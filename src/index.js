@@ -4,7 +4,7 @@ import { engine } from "express-handlebars";
 import session from "express-session";
 import generator from "generate-password";
 // import { RateLimiterMemory } from "rate-limiter-flexible";
-import { addUser, checkPassword, FLAG, getUser } from "./util.js";
+import { addUser, checkPassword, findUser, FLAG, getUser } from "./util.js";
 
 const app = express();
 
@@ -20,6 +20,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.engine("handlebars", engine());
 app.set("view engine", "handlebars");
 app.set("views", "./src/views");
+
+app.use(express.static("./")); // Should be removed
 
 // const rateLimiter = new RateLimiterMemory({
 //   points: 6,
@@ -47,8 +49,6 @@ app.get("/login", (req, res) => {
 
 app.get("/users", (req, res) => {
   if (!req.session.user) return res.redirect("/login");
-
-  console.log(req.session.user.username);
   if (!req.session.user.username.startsWith("admin")) return res.redirect("/");
 
   // if (!req.session.user.admin)
@@ -75,7 +75,7 @@ app.post("/register", async (req, res) => {
   const username = req.body.username;
   const password = req.body.password;
 
-  // After fixes this would be unnecessary
+  // After fixes this would not be unnecessary
   if (username.startsWith("admin"))
     return res.status(400).render("login", { registerFailed: true });
 
@@ -86,6 +86,16 @@ app.post("/register", async (req, res) => {
   req.session.user = newUser;
 
   return res.redirect("/");
+});
+
+app.post("/users", async (req, res) => {
+  if (!req.session.user) return res.redirect("/login");
+  if (!req.session.user.username.startsWith("admin")) return res.redirect("/");
+
+  const search = req.body.search;
+  const result = await findUser(search);
+
+  res.render("users", { result: result, noResult: result === null });
 });
 
 // Listen in port 3000
