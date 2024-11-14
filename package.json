@@ -2,7 +2,7 @@
   "name": "cyber-security-base-project-i",
   "version": "1.0.0",
   "scripts": {
-    "start": "node src/index.js"
+    "start": "node src/index.mjs"
   },
   "dependencies": {
     "argon2": "^0.41.1",

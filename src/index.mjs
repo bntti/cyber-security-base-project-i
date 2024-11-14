@@ -4,7 +4,7 @@ import { engine } from "express-handlebars";
 import session from "express-session";
 import generator from "generate-password";
 // import { RateLimiterMemory } from "rate-limiter-flexible";
-import { addUser, checkPassword, findUser, FLAG, getUser } from "./util.js";
+import { addUser, checkPassword, findUser, FLAG, getUser } from "./util.mjs";
 
 const app = express();
 
