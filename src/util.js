@@ -1,12 +1,16 @@
+// import argon from "argon2";
 import { randomBytes } from "crypto";
 import generator from "generate-password";
 import sqlite3 from "sqlite3";
+
+// For actual CTF should be read from env
+export const FLAG = "CTF-" + generator.generate({ length: 10 });
 
 // Hash function and password checks
 const xorSecret = randomBytes(256);
 const hash = async (password) => {
   // https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html
-  // return await argon.hash(req.body.newPassword, {
+  // return await argon.hash(password, {
   //   type: argon.argon2id,
   //   memoryCost: 19456,
   //   parallelism: 1,
@@ -23,7 +27,7 @@ const hash = async (password) => {
 
 export const checkPassword = async (password, pwdHash) => {
   // return await argon.verify(password.trim(), pwd_hash);
-  return (await hash(password)) === pwdHash;
+  return (await hash(password.trim())) === pwdHash;
 };
 
 // DB init
@@ -39,6 +43,20 @@ db.serialize(async () => {
     "admin",
     await hash(adminPassword),
     true,
+  ]);
+
+  const testUserPassword = generator.generate({
+    length: 3,
+    lowercase: true,
+    uppercase: false,
+    numbers: false,
+    symbols: false,
+  });
+
+  db.run(`INSERT INTO users(username, password, admin) VALUES (?, ?, ?)`, [
+    "admin-test",
+    await hash(testUserPassword),
+    false,
   ]);
 });
 

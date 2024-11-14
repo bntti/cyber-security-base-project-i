@@ -3,7 +3,8 @@ import express from "express";
 import { engine } from "express-handlebars";
 import session from "express-session";
 import generator from "generate-password";
-import { addUser, checkPassword, getUser } from "./util.js";
+// import { RateLimiterMemory } from "rate-limiter-flexible";
+import { addUser, checkPassword, FLAG, getUser } from "./util.js";
 
 const app = express();
 
@@ -20,13 +21,40 @@ app.engine("handlebars", engine());
 app.set("view engine", "handlebars");
 app.set("views", "./src/views");
 
+// const rateLimiter = new RateLimiterMemory({
+//   points: 6,
+//   duration: 1,
+//   blockDuration: 5,
+// });
+// app.use((req, res, next) => {
+//   rateLimiter
+//     .consume(req.ip)
+//     .then(() => next())
+//     .catch(() => res.status(429).send());
+// });
+
 // Views
 app.get("/", (req, res) => {
-  res.render("home");
+  let admin = false;
+  if (req.session.user && req.session.user.admin) admin = true;
+
+  res.render("home", { admin: admin, flag: FLAG });
 });
 
 app.get("/login", (req, res) => {
   res.render("login");
+});
+
+app.get("/users", (req, res) => {
+  if (!req.session.user) return res.redirect("/login");
+
+  console.log(req.session.user.username);
+  if (!req.session.user.username.startsWith("admin")) return res.redirect("/");
+
+  // if (!req.session.user.admin)
+  //   return res.redirect("/login");
+
+  res.render("users");
 });
 
 app.post("/login", async (req, res) => {
@@ -34,10 +62,10 @@ app.post("/login", async (req, res) => {
   const password = req.body.password;
 
   const user = await getUser(username);
-  if (!user) return res.render("login", { loginFailed: true });
+  if (!user) return res.status(401).render("login", { loginFailed: true });
 
   if (!(await checkPassword(password, user.password)))
-    return res.render("login", { loginFailed: true });
+    return res.status(401).render("login", { loginFailed: true });
 
   req.session.user = user;
   return res.redirect("/");
@@ -47,8 +75,12 @@ app.post("/register", async (req, res) => {
   const username = req.body.username;
   const password = req.body.password;
 
+  // After fixes this would be unnecessary
+  if (username.startsWith("admin"))
+    return res.status(400).render("login", { registerFailed: true });
+
   const user = await getUser(username);
-  if (user) return res.render("login", { registerFailed: true });
+  if (user) return res.status(400).render("login", { registerFailed: true });
 
   const newUser = await addUser(username, password, false);
   req.session.user = newUser;
